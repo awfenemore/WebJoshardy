@@ -7,7 +7,7 @@
         <img src="../assets/images/djob.jpg">
         <img src="../assets/images/topher.jpg">
         <img src="../assets/images/eenus.jpg">
-        <img src="../assets/images/ronnie.jpg"> <br/>
+        <img src="../assets/images/ronnie.jpg">
       </div>
       <div id="left-changes-container">
         <h4>Change Team Name</h4>
@@ -21,8 +21,9 @@
       <h3>${{this.team2score}}</h3> <br/><br/>
       <div id="right-images-container">
         <img src="../assets/images/firejosh.jpg">
-        <img src="../assets/images/olivia.jpg">
         <img src="../assets/images/skeebs.jpg">
+        <img src="../assets/images/dogs.jpg">
+        <img src="../assets/images/olivia.jpg">
       </div>
       <div id="right-changes-container">
         <h4>Change Team Name</h4>
@@ -36,6 +37,7 @@
 
 <script>
   import svg from 'svg.js';
+  import stuff from '../questions.js';
   export default {
     name: 'Joshardy',
     data () {
@@ -47,7 +49,8 @@
         team1colour: null,
         team2name: "Team 2 Name",
         team2score: 0,
-        team2colour: null
+        team2colour: null,
+        str1: ""
       }
     },
     mounted: function () {
@@ -59,6 +62,12 @@
       let MARGIN = 1.43;
       let TEXTSIZE = 50;
       let FONT = {family: 'Impact', size: TEXTSIZE, anchor: 'middle', leading: '1.5em'};
+      let CATEGORYFONT = {family: 'Gadugi', size: 25, anchor: 'middle', leading: '1.5em'};
+
+      //Read questions here
+      this.str1 = stuff[0].str;
+
+
 
       let draw = SVG('Joshardy').size(1196, 872);
 
@@ -67,7 +76,9 @@
       let category = "cat";
       for (let i = 0; i <= 5; i += 1) {
         //Category background
-        let rect = draw.rect(RECTWIDTH.toString().concat('%'), RECTHEIGHT.toString().concat('%')).id(category.concat(i.toString(10))).addClass("questions".concat(i.toString()).concat(" category")).move((MARGIN + ((MARGIN * i) + (RECTWIDTH * i))).toString().concat('%'),MARGIN.toString().concat('%'));
+        let rect = draw.rect(RECTWIDTH.toString().concat('%'), RECTHEIGHT.toString().concat('%')).id(category.concat(i.toString(10))).addClass("questions".concat(i.toString()).concat(" category")).move((MARGIN + ((MARGIN * i) + (RECTWIDTH * i))).toString().concat('%'), MARGIN.toString().concat('%'));
+        //Category labels
+        let categoryText = draw.text(this.str1).fill('#fff').font(CATEGORYFONT).addClass("category-label".concat(i.toString())).move((MARGIN + ((MARGIN * i) + (RECTWIDTH * i)) + RECTWIDTH / 2).toString().concat('%'), ((RECTHEIGHT / 2) - MARGIN).toString().concat('%'));
         //Questions
         let rect200 = draw.rect(RECTWIDTH.toString().concat('%'), RECTHEIGHT.toString().concat('%')).id('200-'.concat(i.toString())).fill(CATQUESTBLUE).addClass("question".concat(" question200")).move((MARGIN + ((MARGIN * i) + (RECTWIDTH * i))).toString().concat('%'),(MARGIN + ((MARGIN) + (RECTHEIGHT))).toString().concat('%'));
         let text200 = draw.text('$200').fill(MONEYTEXTCOLOUR).font(FONT).addClass("questions".concat(i.toString()).concat(" questiontext200")).move((MARGIN + ((MARGIN * i) + (RECTWIDTH * i)) + RECTWIDTH / 2).toString().concat('%'),(MARGIN*2 + ((MARGIN) + (RECTHEIGHT)) ).toString().concat('%'));
@@ -81,6 +92,9 @@
         let text1000 = draw.text('$1000').fill(MONEYTEXTCOLOUR).font(FONT).addClass("questions".concat(i.toString()).concat(" questiontext1000")).move((MARGIN + ((MARGIN * i) + (RECTWIDTH * i)) + RECTWIDTH / 2).toString().concat('%'),(MARGIN*2 + ((MARGIN*5) + (RECTHEIGHT*5))).toString().concat('%'));
       }
     },
+
+
+
     methods: {
       updateTeam1Colour: function () {
         document.getElementById("left-team-container").style.backgroundColor = this.team1colour;
@@ -88,6 +102,8 @@
       updateTeam2Colour: function () {
         document.getElementById("right-team-container").style.backgroundColor = this.team2colour;
       }
+
+
     }
   }
 </script>
