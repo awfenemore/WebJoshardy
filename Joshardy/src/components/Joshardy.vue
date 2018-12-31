@@ -1,5 +1,9 @@
 <template>
   <div id="Joshardy">
+    <audio id="fgh" src="src/assets/audio/sport.mp3">
+      <!--<source id="fgh"  type="audio/mpeg">-->
+    </audio>
+
     <div id="left-team-container">
       <h2>{{this.team1name}}</h2>
       <h3>${{this.team1score}}</h3> <br/><br/>
@@ -53,6 +57,7 @@
         FONT : {family: 'Impact', size: 50, anchor: 'middle', leading: '1.5em'},
         CATEGORYFONT : {family: 'Gadugi', size: 25, anchor: 'middle', leading: '1.5em'},
         QUESTIONFONT : {family: 'Gadugi', size: 60, anchor: 'middle', leading: '1.5em'},
+        ROUND2FONT : {family: 'Gadugi', size: 10, anchor: 'middle', leading: '1.5em'},
 
         round1cats: [],
         round2cats: [],
@@ -91,7 +96,13 @@
         document.getElementById("right-team-container").style.backgroundColor = this.team2colour;
       },
       showAnswer: function () {
-        let x = this.draw.text(this.currentQuestion.a).fill('#fff').font(this.QUESTIONFONT).move(665, 600).id('answertext');
+        if (document.getElementById('questiontext')) {
+          document.getElementById('questiontext').remove();
+        }
+        if (document.getElementById('audio')) {
+          document.getElementById('audio').remove();
+        }
+        let x = this.draw.text(this.currentQuestion.a).fill('#fff').font(this.QUESTIONFONT).move(665, 350).id('answertext');
       },
       removequestion: function () {
         document.getElementById('questioncontainer').remove();
@@ -100,9 +111,16 @@
         document.getElementById('team2plus').remove();
         document.getElementById('team2minus').remove();
         document.getElementById('showanswer').remove();
+        if (document.getElementById('answertext')) {
+          document.getElementById('answertext').remove();
+        }
+        if (document.getElementById('questiontext')) {
+          document.getElementById('questiontext').remove();
+        }
+        if (document.getElementById('audio')) {
+          document.getElementById('audio').remove();
+        }
 
-        document.getElementById('questiontext').remove();
-        document.getElementById('answertext').remove();
 
       },
       team1correct: function () {
@@ -130,7 +148,7 @@
 
       drawBoard: function () {
         this.draw = SVG('Joshardy').size(1196, 872);
-
+        let round2text = this.draw.text('Round 2').fill('#fff').font(this.ROUND2FONT).move(1280,0).click(this.drawRound2);
         //WARNING SPICY CODE AHEAD
         for (let i = 0; i <= 5; i += 1) {
           //Category background
@@ -178,9 +196,6 @@
         this.currentQuestion = this.questions[(values[1])][values[0]];
         this.currentTarget = e.currentTarget;
         this.question = this.draw.rect(1331, 872).fill(this.CATQUESTBLUE).id('questioncontainer');
-        //alert(this.questions[(values[1])][values[0]].q.length);
-        //alert(this.questions[(values[1])][values[0]].a);
-        //alert(e.currentTarget.y.baseVal.value);
 
         //Buttons for scoring
         let team1plus = this.draw.rect(50,50).fill('#44c113').id("team1plus").move(20,800).click(this.team1correct);
@@ -189,14 +204,14 @@
         let team2minus = this.draw.rect(50,50).fill('#ff0c1e').id("team2minus").move(1190,800).click(this.team2incorrect);
 
         //Show answer
-        let x = this.draw.text("Show answer").fill('#fff').font(this.QUESTIONFONT).move(665, 750).id('showanswer').click(this.showAnswer);
-
+        let x = this.draw.text("Show answer").fill('#fff').font(this.QUESTIONFONT).move(665, 780).id('showanswer').click(this.showAnswer);
 
         if (!this.questions[(values[1])][values[0]].f) {
           //if there is no filename, just display the text
-          let x = this.draw.text(this.questions[(values[1])][values[0]].q).fill('#fff').font(this.QUESTIONFONT).move(665, 400).id('questiontext');
+          let x = this.draw.text(this.questions[(values[1])][values[0]].q).fill('#fff').font(this.QUESTIONFONT).move(665, 350).id('questiontext');
+        } else if (this.questions[(values[1])][values[0]].f.endsWith('.mp3')) {
+          let x = this.draw.text('Name this track and artist').fill('#fff').font(this.QUESTIONFONT).move(665, 350).id('audio').click(this.playAudio(this.questions[(values[1])][values[0]].f));
         }
-
       },
 
       drawRound2: function () {
@@ -216,10 +231,29 @@
           let text800 = this.draw.text('$1600').fill(this.MONEYTEXTCOLOUR).font(this.FONT).addClass("questions".concat(i.toString()).concat(" questiontext1600")).move((this.MARGIN + ((this.MARGIN * i) + (this.RECTWIDTH * i)) + this.RECTWIDTH / 2).toString().concat('%'),(this.MARGIN*2 + ((this.MARGIN*4) + (this.RECTHEIGHT*4))).toString().concat('%')).id('1600-text-'.concat(i.toString()));
           let rect1000 = this.draw.rect(this.RECTWIDTH.toString().concat('%'), this.RECTHEIGHT.toString().concat('%')).id('4-'.concat((i+6).toString())).fill(this.CATQUESTBLUE).addClass("question".concat(" question2000")).move((this.MARGIN + ((this.MARGIN * i) + (this.RECTWIDTH * i))).toString().concat('%'),(this.MARGIN + ((this.MARGIN*5) + (this.RECTHEIGHT*5))).toString().concat('%')).click(this.showQuestion);
           let text1000 = this.draw.text('$2000').fill(this.MONEYTEXTCOLOUR).font(this.FONT).addClass("questions".concat(i.toString()).concat(" questiontext2000")).move((this.MARGIN + ((this.MARGIN * i) + (this.RECTWIDTH * i)) + this.RECTWIDTH / 2).toString().concat('%'),(this.MARGIN*2 + ((this.MARGIN*5) + (this.RECTHEIGHT*5))).toString().concat('%')).id('2000-text-'.concat(i.toString()));
-
         }
-      }
+      },
 
+      playAudio: function (desc) {
+
+        alert(document.getElementById('fgh'));
+        let x = document.getElementById('fgh');
+        x.play();
+        // let audioElement;
+        // if(!audioElement) {
+        //   audioElement = document.createElement('audio');
+        //   audioElement.innerHTML = '<source src="' + '../../src/assets/audio/sport.mp3'+ '" type="audio/mpeg" />'
+        // }
+        // audioElement.play();
+
+        //
+        // //alert(desc);
+        // let audio = new Audio('../../src/assets/audio/sport.mp3');
+        // alert(audio);
+        // audio.play();
+        // //alert(desc);
+        //   //alert(desc);
+      }
 
     }
   }
