@@ -5,34 +5,121 @@ svg {
    top: 0;
 }
 
-.category {
-  fill: #2434BD;
-  width: 15%;
- }
+#Joshardy {
+  display: flex;
+  align-content: space-between;
+  top: 0;
+  left: 0;
+  position: absolute;
+}
+
+.question-container {
+  width: 70%;
+  height: 100vh;
+  background-color: #04101d;
+  display: flex;
+  align-items: stretch;
+}
+
+.cat-container {
+  display: inline;
+  width: 100%;
+  align-items: baseline;
+}
+
+.interior-button {
+  width: 90%;
+  height: 14%;
+  margin: 10px 0;
+  background-color: #2434BD;
+  border: 0;
+}
+
+.question {
+  font-family: Impact;
+  font-size: 50px;
+  color: #E8B71A;
+  text-shadow: 1px 1px #ff7f39;
+}
+
+.cat-label {
+  font-family: Gadugi;
+  font-size: 30px;
+  color: #fff;
+  padding: 15px;
+}
 
 .question:hover {
-  fill: #256b9e;
-  stroke: white;
+  background-color: #256b9e;
+  border: 1px solid white;
 }
 
-#left-team-container {
-  background-color: #1c98ff;
+
+.show-question-container {
+  width: 70%;
+  height: 100vh;
+  background-color: #2434BD;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.question-text {
+  color : #fff;
+  flex-grow: 0.9;                   /* NEED TO FIX THIS. ALSO NOTE THAT A ROUND @ BUTTON CAN DO A this.round1cats = this.round2cats; and this.questions=round2questions call */
+}
+
+.answer-text {
+  color : #fff;
+  /*flex-grow: 0.9;*/
+}
+
+.q-button {
+  display: inline;
+  width: 20%;
+  height: 10%;
+  color: #fff;
+  margin: 0 10px;
+  border: 2px solid black;
+  font-weight: bold;
+}
+
+.question-buttons-container {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.q-correct {
+  background-color: #1bc504;
+}
+
+.q-incorrect {
+  background-color: #ff0c1e;
+}
+
+.show-answer {
+  color: black;
+}
+
+
+
+.left-team-container {
   float: left;
-  width: 14%;
-  padding-bottom: 2%;
+  width: 15%;
+  height: 100vh;
 }
 
-#left-team-container img {
+.left-team-container img {
   float: left;
   width: 45%;
   margin: 5px;
 }
 
-#left-image-container {
-  padding-bottom: 100%;
-}
 
-#left-changes-container {
+
+.left-changes-container {
   position: relative;
   vertical-align: bottom;
   display: inline-block;
@@ -42,28 +129,27 @@ svg {
 
 
 
- #right-team-container {
-   background-color: #137a2d;
+ .right-team-container {
    float: right;
-   width: 14%;
-   padding-bottom: 2%;
+   width: 15%;
+   height: 100vh;
  }
 
- #right-team-container img {
+ .right-team-container img {
    float: right;
    width: 45%;
    margin: 5px;
  }
 
-#right-image-container {
+.right-image-container {
   padding-bottom: 100%;
 }
 
- #right-changes-container {
+ .right-changes-container {
    position: relative;
    vertical-align: bottom;
    display: inline-block;
-   padding-top: 32%;
+
    margin: 0 auto;
  }
 

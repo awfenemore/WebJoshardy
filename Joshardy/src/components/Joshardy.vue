@@ -1,10 +1,6 @@
 <template>
   <div id="Joshardy">
-    <audio id="fgh" src="src/assets/audio/sport.mp3">
-      <!--<source id="fgh"  type="audio/mpeg">-->
-    </audio>
-
-    <div id="left-team-container">
+    <div class="left-team-container" :style="{backgroundColor: team1colour}">
       <h2>{{this.team1name}}</h2>
       <h3>${{this.team1score}}</h3> <br/><br/>
       <div id="left-image-container">
@@ -17,10 +13,30 @@
         <h4>Change Team Name</h4>
         <input v-model="team1name" placeholder="Type your Team Name">
         <h4>Change Team Colour</h4>
-        <input type="color" id="team1colourchanger" v-on:input="updateTeam1Colour" v-model="team1colour"/>
+        <input type="color" id="team1colourchanger" v-model="team1colour"/>
       </div>
     </div>
-    <div id="right-team-container">
+
+    <div v-if="!questionSelected" class="question-container">
+      <div class="cat-container" v-for="(cat, index) in this.round1cats">
+        <button disabled :class="'interior-button cat-label category-label-'.concat(index)">{{cat}}</button>
+        <button class="interior-button question" v-for="question in questions[parseInt(index)]" @click="showQuestion(question)">${{question.v}}</button>
+      </div>
+    </div>
+
+    <div v-else class="show-question-container">
+      <h2 class="question-text">{{currentQuestion.q}}</h2>
+      <h2 class="answer-text" v-show="showAnswerBool" >{{currentQuestion.a}}</h2>
+      <div class="question-buttons-container">
+        <button class="q-button team1-correct q-correct" @click="team1correct">{{this.team1name}} Correct</button>
+        <button class="q-button team1-incorrect q-incorrect" @click="team1incorrect">{{this.team1name}} Incorrect</button>
+        <button class="q-button show-answer" @click="showAnswer" >Show Answer</button>
+        <button class="q-button team2-incorrect q-incorrect" @click="team2incorrect">{{this.team2name}} Incorrect</button>
+        <button class="q-button team2-correct q-correct" @click="team2correct">{{this.team2name}} Correct</button>
+      </div>
+    </div>
+
+    <div class="right-team-container" :style="{backgroundColor: team2colour}">
       <h2>{{this.team2name}}</h2>
       <h3>${{this.team2score}}</h3> <br/><br/>
       <div id="right-images-container">
@@ -33,9 +49,10 @@
         <h4>Change Team Name</h4>
         <input v-model="team2name" placeholder="Type your Team Name">
         <h4>Change Team Colour</h4>
-        <input type="color" id="team2colourchanger" v-on:input="updateTeam2Colour" v-model="team2colour"/>
+        <input type="color" id="team2colourchanger" v-model="team2colour"/>
       </div>
     </div>
+
   </div>
 </template>
 
@@ -63,17 +80,20 @@
         round2cats: [],
         team1name: "Team 1 Name",
         team1score: 0,
-        team1colour: null,
+        team1colour: '#137a2d',
         team2name: "Team 2 Name",
         team2score: 0,
-        team2colour: null,
+        team2colour: '#1c98ff',
         draw: null,
         questionShow: null,
 
         questions: [],
         round: 1,
-        currentQuestion: null,
-        currentTarget: null
+        currentTarget: null,
+
+        questionSelected: false,
+        showAnswerBool: false,
+        currentQuestion: null
 
         //SVG elements
 
@@ -82,7 +102,7 @@
     mounted: function () {
 
       this.readQuestionData();
-      this.drawBoard();
+      //this.drawBoard();
 
     },
 
@@ -96,79 +116,72 @@
         document.getElementById("right-team-container").style.backgroundColor = this.team2colour;
       },
       showAnswer: function () {
-        if (document.getElementById('questiontext')) {
-          document.getElementById('questiontext').remove();
-        }
-        if (document.getElementById('audio')) {
-          document.getElementById('audio').remove();
-        }
-        let x = this.draw.text(this.currentQuestion.a).fill('#fff').font(this.QUESTIONFONT).move(665, 350).id('answertext');
+        this.showAnswerBool = true;
       },
-      removequestion: function () {
-        document.getElementById('questioncontainer').remove();
-        document.getElementById('team1plus').remove();
-        document.getElementById('team1minus').remove();
-        document.getElementById('team2plus').remove();
-        document.getElementById('team2minus').remove();
-        document.getElementById('showanswer').remove();
-        if (document.getElementById('answertext')) {
-          document.getElementById('answertext').remove();
-        }
-        if (document.getElementById('questiontext')) {
-          document.getElementById('questiontext').remove();
-        }
-        if (document.getElementById('audio')) {
-          document.getElementById('audio').remove();
-        }
-
-
-      },
+      // removequestion: function () {
+      //   document.getElementById('questioncontainer').remove();
+      //   document.getElementById('team1plus').remove();
+      //   document.getElementById('team1minus').remove();
+      //   document.getElementById('team2plus').remove();
+      //   document.getElementById('team2minus').remove();
+      //   document.getElementById('showanswer').remove();
+      //   if (document.getElementById('answertext')) {
+      //     document.getElementById('answertext').remove();
+      //   }
+      //   if (document.getElementById('questiontext')) {
+      //     document.getElementById('questiontext').remove();
+      //   }
+      //   if (document.getElementById('audio')) {
+      //     document.getElementById('audio').remove();
+      //   }
+      //
+      //
+      // },
       team1correct: function () {
         this.team1score += this.currentQuestion.v;
-        let cover = this.draw.rect(this.RECTWIDTH.toString().concat('%'), this.RECTHEIGHT.toString().concat('%')).fill(this.CATQUESTBLUE).addClass("cover").move(this.currentTarget.x.baseVal.value, this.currentTarget.y.baseVal.value);
-        this.removequestion();
+        this.questionSelected = false;
+        this.currentQuestion = null;
       },
       team1incorrect: function () {
         this.team1score -= this.currentQuestion.v;
-        let cover = this.draw.rect(this.RECTWIDTH.toString().concat('%'), this.RECTHEIGHT.toString().concat('%')).fill(this.CATQUESTBLUE).addClass("cover").move(this.currentTarget.x.baseVal.value, this.currentTarget.y.baseVal.value);
-        this.removequestion();
+        this.questionSelected = false;
+        this.currentQuestion = null;
 
       },
       team2correct: function () {
         this.team2score += this.currentQuestion.v;
-        let cover = this.draw.rect(this.RECTWIDTH.toString().concat('%'), this.RECTHEIGHT.toString().concat('%')).fill(this.CATQUESTBLUE).addClass("cover").move(this.currentTarget.x.baseVal.value, this.currentTarget.y.baseVal.value);
-        this.removequestion();
+        this.questionSelected = false;
+        this.currentQuestion = null;
       },
       team2incorrect: function () {
         this.team2score -= this.currentQuestion.v;
-        let cover = this.draw.rect(this.RECTWIDTH.toString().concat('%'), this.RECTHEIGHT.toString().concat('%')).fill(this.CATQUESTBLUE).addClass("cover").move(this.currentTarget.x.baseVal.value, this.currentTarget.y.baseVal.value);
-        this.removequestion();
-
+        this.questionSelected = false;
+        this.currentQuestion = null;
       },
 
-      drawBoard: function () {
-        this.draw = SVG('Joshardy').size(1196, 872);
-        let round2text = this.draw.text('Round 2').fill('#fff').font(this.ROUND2FONT).move(1280,0).click(this.drawRound2);
-        //WARNING SPICY CODE AHEAD
-        for (let i = 0; i <= 5; i += 1) {
-          //Category background
-          let rect = this.draw.rect(this.RECTWIDTH.toString().concat('%'), this.RECTHEIGHT.toString().concat('%')).id('cat'.concat(i.toString(10))).addClass("questions".concat(i.toString()).concat(" category")).move((this.MARGIN + ((this.MARGIN * i) + (this.RECTWIDTH * i))).toString().concat('%'), this.MARGIN.toString().concat('%'));
-          //Category labels
-          let categoryText = this.draw.text(this.round1cats[i]).fill('#fff').font(this.CATEGORYFONT).addClass("category-label".concat(i.toString())).move((this.MARGIN + ((this.MARGIN * i) + (this.RECTWIDTH * i)) + this.RECTWIDTH / 2).toString().concat('%'), ((this.RECTHEIGHT / 2) - this.MARGIN).toString().concat('%')).click(this.showQuestion);
-          //Questions
-          let rect200 = this.draw.rect(this.RECTWIDTH.toString().concat('%'), this.RECTHEIGHT.toString().concat('%')).id('0-'.concat(i.toString())).fill(this.CATQUESTBLUE).addClass("question".concat(" question200")).move((this.MARGIN + ((this.MARGIN * i) + (this.RECTWIDTH * i))).toString().concat('%'),(this.MARGIN + ((this.MARGIN) + (this.RECTHEIGHT))).toString().concat('%')).click(this.showQuestion);
-          let text200 = this.draw.text('$200').fill(this.MONEYTEXTCOLOUR).font(this.FONT).addClass("questions".concat(i.toString()).concat(" questiontext200")).move((this.MARGIN + ((this.MARGIN * i) + (this.RECTWIDTH * i)) + this.RECTWIDTH / 2).toString().concat('%'),(this.MARGIN*2 + ((this.MARGIN) + (this.RECTHEIGHT)) ).toString().concat('%')).click(this.showQuestion).id('200-text-'.concat(i.toString()));
-          let rect400 = this.draw.rect(this.RECTWIDTH.toString().concat('%'), this.RECTHEIGHT.toString().concat('%')).id('1-'.concat(i.toString())).fill(this.CATQUESTBLUE).addClass("question".concat(" question400")).move((this.MARGIN + ((this.MARGIN * i) + (this.RECTWIDTH * i))).toString().concat('%'),(this.MARGIN + ((this.MARGIN*2) + (this.RECTHEIGHT*2))).toString().concat('%')).click(this.showQuestion);
-          let text400 = this.draw.text('$400').fill(this.MONEYTEXTCOLOUR).font(this.FONT).addClass("questions".concat(i.toString()).concat(" questiontext400")).move((this.MARGIN + ((this.MARGIN * i) + (this.RECTWIDTH * i)) + this.RECTWIDTH / 2).toString().concat('%'),(this.MARGIN*2 + ((this.MARGIN*2) + (this.RECTHEIGHT*2))).toString().concat('%')).click(this.showQuestion).id('400-text-'.concat(i.toString()));
-          let rect600 = this.draw.rect(this.RECTWIDTH.toString().concat('%'), this.RECTHEIGHT.toString().concat('%')).id('2-'.concat(i.toString())).fill(this.CATQUESTBLUE).addClass("question".concat(" question600")).move((this.MARGIN + ((this.MARGIN * i) + (this.RECTWIDTH * i))).toString().concat('%'),(this.MARGIN + ((this.MARGIN*3) + (this.RECTHEIGHT*3))).toString().concat('%')).click(this.showQuestion);
-          let text600 = this.draw.text('$600').fill(this.MONEYTEXTCOLOUR).font(this.FONT).addClass("questions".concat(i.toString()).concat(" questiontext600")).move((this.MARGIN + ((this.MARGIN * i) + (this.RECTWIDTH * i)) + this.RECTWIDTH / 2).toString().concat('%'),(this.MARGIN*2 + ((this.MARGIN*3) + (this.RECTHEIGHT*3))).toString().concat('%')).click(this.showQuestion).id('600-text-'.concat(i.toString()));
-          let rect800 = this.draw.rect(this.RECTWIDTH.toString().concat('%'), this.RECTHEIGHT.toString().concat('%')).id('3-'.concat(i.toString())).fill(this.CATQUESTBLUE).addClass("question".concat(" question800")).move((this.MARGIN + ((this.MARGIN * i) + (this.RECTWIDTH * i))).toString().concat('%'),(this.MARGIN + ((this.MARGIN*4) + (this.RECTHEIGHT*4))).toString().concat('%')).click(this.showQuestion);
-          let text800 = this.draw.text('$800').fill(this.MONEYTEXTCOLOUR).font(this.FONT).addClass("questions".concat(i.toString()).concat(" questiontext800")).move((this.MARGIN + ((this.MARGIN * i) + (this.RECTWIDTH * i)) + this.RECTWIDTH / 2).toString().concat('%'),(this.MARGIN*2 + ((this.MARGIN*4) + (this.RECTHEIGHT*4))).toString().concat('%')).click(this.showQuestion).id('800-text-'.concat(i.toString()));
-          let rect1000 = this.draw.rect(this.RECTWIDTH.toString().concat('%'), this.RECTHEIGHT.toString().concat('%')).id('4-'.concat(i.toString())).fill(this.CATQUESTBLUE).addClass("question".concat(" question1000")).move((this.MARGIN + ((this.MARGIN * i) + (this.RECTWIDTH * i))).toString().concat('%'),(this.MARGIN + ((this.MARGIN*5) + (this.RECTHEIGHT*5))).toString().concat('%')).click(this.showQuestion);
-          let text1000 = this.draw.text('$1000').fill(this.MONEYTEXTCOLOUR).font(this.FONT).addClass("questions".concat(i.toString()).concat(" questiontext1000")).move((this.MARGIN + ((this.MARGIN * i) + (this.RECTWIDTH * i)) + this.RECTWIDTH / 2).toString().concat('%'),(this.MARGIN*2 + ((this.MARGIN*5) + (this.RECTHEIGHT*5))).toString().concat('%')).click(this.showQuestion).id('1000-text-'.concat(i.toString()));
-
-        }
-      },
+      // drawBoard: function () {
+      //   this.draw = SVG('Joshardy').size(1196, 872);
+      //   let round2text = this.draw.text('Round 2').fill('#fff').font(this.ROUND2FONT).move(1280,0).click(this.drawRound2);
+      //   //WARNING SPICY CODE AHEAD
+      //   for (let i = 0; i <= 5; i += 1) {
+      //     //Category background
+      //     let rect = this.draw.rect(this.RECTWIDTH.toString().concat('%'), this.RECTHEIGHT.toString().concat('%')).id('cat'.concat(i.toString(10))).addClass("questions".concat(i.toString()).concat(" category")).move((this.MARGIN + ((this.MARGIN * i) + (this.RECTWIDTH * i))).toString().concat('%'), this.MARGIN.toString().concat('%'));
+      //     //Category labels
+      //     let categoryText = this.draw.text(this.round1cats[i]).fill('#fff').font(this.CATEGORYFONT).addClass("category-label".concat(i.toString())).move((this.MARGIN + ((this.MARGIN * i) + (this.RECTWIDTH * i)) + this.RECTWIDTH / 2).toString().concat('%'), ((this.RECTHEIGHT / 2) - this.MARGIN).toString().concat('%')).click(this.showQuestion);
+      //     //Questions
+      //     let rect200 = this.draw.rect(this.RECTWIDTH.toString().concat('%'), this.RECTHEIGHT.toString().concat('%')).id('0-'.concat(i.toString())).fill(this.CATQUESTBLUE).addClass("question".concat(" question200")).move((this.MARGIN + ((this.MARGIN * i) + (this.RECTWIDTH * i))).toString().concat('%'),(this.MARGIN + ((this.MARGIN) + (this.RECTHEIGHT))).toString().concat('%')).click(this.showQuestion);
+      //     let text200 = this.draw.text('$200').fill(this.MONEYTEXTCOLOUR).font(this.FONT).addClass("questions".concat(i.toString()).concat(" questiontext200")).move((this.MARGIN + ((this.MARGIN * i) + (this.RECTWIDTH * i)) + this.RECTWIDTH / 2).toString().concat('%'),(this.MARGIN*2 + ((this.MARGIN) + (this.RECTHEIGHT)) ).toString().concat('%')).click(this.showQuestion).id('200-text-'.concat(i.toString()));
+      //     let rect400 = this.draw.rect(this.RECTWIDTH.toString().concat('%'), this.RECTHEIGHT.toString().concat('%')).id('1-'.concat(i.toString())).fill(this.CATQUESTBLUE).addClass("question".concat(" question400")).move((this.MARGIN + ((this.MARGIN * i) + (this.RECTWIDTH * i))).toString().concat('%'),(this.MARGIN + ((this.MARGIN*2) + (this.RECTHEIGHT*2))).toString().concat('%')).click(this.showQuestion);
+      //     let text400 = this.draw.text('$400').fill(this.MONEYTEXTCOLOUR).font(this.FONT).addClass("questions".concat(i.toString()).concat(" questiontext400")).move((this.MARGIN + ((this.MARGIN * i) + (this.RECTWIDTH * i)) + this.RECTWIDTH / 2).toString().concat('%'),(this.MARGIN*2 + ((this.MARGIN*2) + (this.RECTHEIGHT*2))).toString().concat('%')).click(this.showQuestion).id('400-text-'.concat(i.toString()));
+      //     let rect600 = this.draw.rect(this.RECTWIDTH.toString().concat('%'), this.RECTHEIGHT.toString().concat('%')).id('2-'.concat(i.toString())).fill(this.CATQUESTBLUE).addClass("question".concat(" question600")).move((this.MARGIN + ((this.MARGIN * i) + (this.RECTWIDTH * i))).toString().concat('%'),(this.MARGIN + ((this.MARGIN*3) + (this.RECTHEIGHT*3))).toString().concat('%')).click(this.showQuestion);
+      //     let text600 = this.draw.text('$600').fill(this.MONEYTEXTCOLOUR).font(this.FONT).addClass("questions".concat(i.toString()).concat(" questiontext600")).move((this.MARGIN + ((this.MARGIN * i) + (this.RECTWIDTH * i)) + this.RECTWIDTH / 2).toString().concat('%'),(this.MARGIN*2 + ((this.MARGIN*3) + (this.RECTHEIGHT*3))).toString().concat('%')).click(this.showQuestion).id('600-text-'.concat(i.toString()));
+      //     let rect800 = this.draw.rect(this.RECTWIDTH.toString().concat('%'), this.RECTHEIGHT.toString().concat('%')).id('3-'.concat(i.toString())).fill(this.CATQUESTBLUE).addClass("question".concat(" question800")).move((this.MARGIN + ((this.MARGIN * i) + (this.RECTWIDTH * i))).toString().concat('%'),(this.MARGIN + ((this.MARGIN*4) + (this.RECTHEIGHT*4))).toString().concat('%')).click(this.showQuestion);
+      //     let text800 = this.draw.text('$800').fill(this.MONEYTEXTCOLOUR).font(this.FONT).addClass("questions".concat(i.toString()).concat(" questiontext800")).move((this.MARGIN + ((this.MARGIN * i) + (this.RECTWIDTH * i)) + this.RECTWIDTH / 2).toString().concat('%'),(this.MARGIN*2 + ((this.MARGIN*4) + (this.RECTHEIGHT*4))).toString().concat('%')).click(this.showQuestion).id('800-text-'.concat(i.toString()));
+      //     let rect1000 = this.draw.rect(this.RECTWIDTH.toString().concat('%'), this.RECTHEIGHT.toString().concat('%')).id('4-'.concat(i.toString())).fill(this.CATQUESTBLUE).addClass("question".concat(" question1000")).move((this.MARGIN + ((this.MARGIN * i) + (this.RECTWIDTH * i))).toString().concat('%'),(this.MARGIN + ((this.MARGIN*5) + (this.RECTHEIGHT*5))).toString().concat('%')).click(this.showQuestion);
+      //     let text1000 = this.draw.text('$1000').fill(this.MONEYTEXTCOLOUR).font(this.FONT).addClass("questions".concat(i.toString()).concat(" questiontext1000")).move((this.MARGIN + ((this.MARGIN * i) + (this.RECTWIDTH * i)) + this.RECTWIDTH / 2).toString().concat('%'),(this.MARGIN*2 + ((this.MARGIN*5) + (this.RECTHEIGHT*5))).toString().concat('%')).click(this.showQuestion).id('1000-text-'.concat(i.toString()));
+      //
+      //   }
+      // },
 
       readQuestionData: function () {
         //Read questions here
@@ -190,28 +203,41 @@
         this.questions.push(questions.JoshPhotos);
       },
 
+      showQuestion: function (val) {
+        this.currentQuestion = val;
+        this.questionSelected = true;
 
-      showQuestion: function (e) {
-        let values = e.currentTarget.id.split('-');
-        this.currentQuestion = this.questions[(values[1])][values[0]];
-        this.currentTarget = e.currentTarget;
-        this.question = this.draw.rect(1331, 872).fill(this.CATQUESTBLUE).id('questioncontainer');
+        //
+        // let values = e.currentTarget.id.split('-');
+        // this.currentQuestion = this.questions[(values[1])][values[0]];
+        // this.currentTarget = e.currentTarget;
+        // this.question = this.draw.rect(1331, 872).fill(this.CATQUESTBLUE).id('questioncontainer');
+        //
+        // //Buttons for scoring
+        // let team1plus = this.draw.rect(50,50).fill('#44c113').id("team1plus").move(20,800).click(this.team1correct);
+        // let team1minus = this.draw.rect(50,50).fill('#ff0c1e').id("team1minus").move(90,800).click(this.team1incorrect);
+        // let team2plus = this.draw.rect(50,50).fill('#44c113').id("team2plus").move(1260,800).click(this.team2correct);
+        // let team2minus = this.draw.rect(50,50).fill('#ff0c1e').id("team2minus").move(1190,800).click(this.team2incorrect);
+        //
+        // //Show answer
+        // let x = this.draw.text("Show answer").fill('#fff').font(this.QUESTIONFONT).move(665, 780).id('showanswer').click(this.showAnswer);
+        //
+        // if (!this.questions[(values[1])][values[0]].f) {
+        //   //if there is no filename, just display the text
+        //   let x = this.draw.text(this.questions[(values[1])][values[0]].q).fill('#fff').font(this.QUESTIONFONT).move(665, 350).id('questiontext');
+        // } else if (this.questions[(values[1])][values[0]].f.endsWith('.mp3')) {
+        //   let x = this.draw.text('Name this track and artist').fill('#fff').font(this.QUESTIONFONT).move(665, 350).id('audio').click(this.playAudio(this.questions[(values[1])][values[0]].f));
+        // } else {
+        //   let x = this.draw.text(this.questions[(values[1])][values[0]].q).fill('#fff').font(this.QUESTIONFONT).move(665, 20).id('questiontext');
+        //   // let image = this.draw.image('src/assets/images/firejosh.jpg', 100, 100).move(100,100);
+        //   // image.attr('href', null);
+        //   // image.attr('xlink:href', 'C:\\Users\\awfen\\Desktop\\Projects\\Joshardy\\WebJoshardy\\Joshardy\\src\\assets\\images\\firejosh.jpg');
+        //
+        // }
+        //
 
-        //Buttons for scoring
-        let team1plus = this.draw.rect(50,50).fill('#44c113').id("team1plus").move(20,800).click(this.team1correct);
-        let team1minus = this.draw.rect(50,50).fill('#ff0c1e').id("team1minus").move(90,800).click(this.team1incorrect);
-        let team2plus = this.draw.rect(50,50).fill('#44c113').id("team2plus").move(1260,800).click(this.team2correct);
-        let team2minus = this.draw.rect(50,50).fill('#ff0c1e').id("team2minus").move(1190,800).click(this.team2incorrect);
 
-        //Show answer
-        let x = this.draw.text("Show answer").fill('#fff').font(this.QUESTIONFONT).move(665, 780).id('showanswer').click(this.showAnswer);
 
-        if (!this.questions[(values[1])][values[0]].f) {
-          //if there is no filename, just display the text
-          let x = this.draw.text(this.questions[(values[1])][values[0]].q).fill('#fff').font(this.QUESTIONFONT).move(665, 350).id('questiontext');
-        } else if (this.questions[(values[1])][values[0]].f.endsWith('.mp3')) {
-          let x = this.draw.text('Name this track and artist').fill('#fff').font(this.QUESTIONFONT).move(665, 350).id('audio').click(this.playAudio(this.questions[(values[1])][values[0]].f));
-        }
       },
 
       drawRound2: function () {
@@ -232,29 +258,7 @@
           let rect1000 = this.draw.rect(this.RECTWIDTH.toString().concat('%'), this.RECTHEIGHT.toString().concat('%')).id('4-'.concat((i+6).toString())).fill(this.CATQUESTBLUE).addClass("question".concat(" question2000")).move((this.MARGIN + ((this.MARGIN * i) + (this.RECTWIDTH * i))).toString().concat('%'),(this.MARGIN + ((this.MARGIN*5) + (this.RECTHEIGHT*5))).toString().concat('%')).click(this.showQuestion);
           let text1000 = this.draw.text('$2000').fill(this.MONEYTEXTCOLOUR).font(this.FONT).addClass("questions".concat(i.toString()).concat(" questiontext2000")).move((this.MARGIN + ((this.MARGIN * i) + (this.RECTWIDTH * i)) + this.RECTWIDTH / 2).toString().concat('%'),(this.MARGIN*2 + ((this.MARGIN*5) + (this.RECTHEIGHT*5))).toString().concat('%')).id('2000-text-'.concat(i.toString()));
         }
-      },
-
-      playAudio: function (desc) {
-
-        alert(document.getElementById('fgh'));
-        let x = document.getElementById('fgh');
-        x.play();
-        // let audioElement;
-        // if(!audioElement) {
-        //   audioElement = document.createElement('audio');
-        //   audioElement.innerHTML = '<source src="' + '../../src/assets/audio/sport.mp3'+ '" type="audio/mpeg" />'
-        // }
-        // audioElement.play();
-
-        //
-        // //alert(desc);
-        // let audio = new Audio('../../src/assets/audio/sport.mp3');
-        // alert(audio);
-        // audio.play();
-        // //alert(desc);
-        //   //alert(desc);
       }
-
     }
   }
 </script>
