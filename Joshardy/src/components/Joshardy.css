@@ -37,14 +37,14 @@ svg {
 
 .question {
   font-family: Impact;
-  font-size: 50px;
+  font-size: 350%;
   color: #E8B71A;
   text-shadow: 1px 1px #ff7f39;
 }
 
 .cat-label {
   font-family: Gadugi;
-  font-size: 30px;
+  font-size: 200%;
   color: #fff;
   padding: 15px;
 }
@@ -68,6 +68,10 @@ svg {
 .question-text {
   color : #fff;
   flex-grow: 0.9;                   /* NEED TO FIX THIS. ALSO NOTE THAT A ROUND @ BUTTON CAN DO A this.round1cats = this.round2cats; and this.questions=round2questions call */
+}
+.question-image {
+  min-height: 500px;
+  width: auto;
 }
 
 .answer-text {
