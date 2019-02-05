@@ -89,6 +89,12 @@ svg {
   font-weight: bold;
 }
 
+.question:disabled {
+  color: #2434BD;
+  opacity: 0.8;
+  text-shadow: none;
+}
+
 .question-buttons-container {
   display: flex;
   justify-content: space-between;

@@ -20,7 +20,7 @@
     <div v-if="!questionSelected" class="question-container">
       <div class="cat-container" v-for="(cat, index) in this.round1cats">
         <button disabled :class="'interior-button cat-label category-label-'.concat(index)">{{cat}}</button>
-        <button class="interior-button question" v-for="question in questions[parseInt(index)]" @click="showQuestion(question)">${{question.v}}</button>
+        <button class="interior-button question" v-for="question in questions[parseInt(index)]" @click="showQuestion(question)" :disabled="question.c">${{question.v}}</button>
       </div>
     </div>
 
@@ -29,6 +29,9 @@
       <h2 class="answer-text" v-show="showAnswerBool" >{{currentQuestion.a}}</h2>
       <div class="files-container">
         <img class="question-image" v-if="currentQuestion.f.endsWith('.jpg') || currentQuestion.f.endsWith('.JPG')" :src="'/static/images/' + currentQuestion.f">
+        <audio v-else-if="currentQuestion.f.endsWith('.mp3')" controls>
+          <source type="audio/mpeg" :src="'/static/audio/' + currentQuestion.f"/>
+        </audio>
       </div>
 
       <div class="question-buttons-container">
@@ -104,7 +107,6 @@
     },
     mounted: function () {
       this.readQuestionData();
-      //this.drawBoard();
     },
 
     methods: {
@@ -163,26 +165,7 @@
       showQuestion: function (val) {
         this.currentQuestion = val;
         this.questionSelected = true;
-      },
-
-      drawRound2: function () {
-        for (let i = 0; i <= 5; i += 1) {
-          //Category background
-          let rect = this.draw.rect(this.RECTWIDTH.toString().concat('%'), this.RECTHEIGHT.toString().concat('%')).id('cat'.concat(i.toString(10))).addClass("questions".concat(i.toString()).concat(" category")).move((this.MARGIN + ((this.MARGIN * i) + (this.RECTWIDTH * i))).toString().concat('%'), this.MARGIN.toString().concat('%'));
-          //Category labels
-          let categoryText = this.draw.text(this.round2cats[i]).fill('#fff').font(this.CATEGORYFONT).addClass("category-label".concat(i.toString())).move((this.MARGIN + ((this.MARGIN * i) + (this.RECTWIDTH * i)) + this.RECTWIDTH / 2).toString().concat('%'), ((this.RECTHEIGHT / 2) - this.MARGIN).toString().concat('%')).click(this.showQuestion);
-          //Questions
-          let rect200 = this.draw.rect(this.RECTWIDTH.toString().concat('%'), this.RECTHEIGHT.toString().concat('%')).id('0-'.concat((i+6).toString())).fill(this.CATQUESTBLUE).addClass("question".concat(" question400")).move((this.MARGIN + ((this.MARGIN * i) + (this.RECTWIDTH * i))).toString().concat('%'),(this.MARGIN + ((this.MARGIN) + (this.RECTHEIGHT))).toString().concat('%')).click(this.showQuestion);
-          let text200 = this.draw.text('$400').fill(this.MONEYTEXTCOLOUR).font(this.FONT).addClass("questions".concat(i.toString()).concat(" questiontext400")).move((this.MARGIN + ((this.MARGIN * i) + (this.RECTWIDTH * i)) + this.RECTWIDTH / 2).toString().concat('%'),(this.MARGIN*2 + ((this.MARGIN) + (this.RECTHEIGHT)) ).toString().concat('%')).id('400-text-'.concat(i.toString()));
-          let rect400 = this.draw.rect(this.RECTWIDTH.toString().concat('%'), this.RECTHEIGHT.toString().concat('%')).id('1-'.concat((i+6).toString())).fill(this.CATQUESTBLUE).addClass("question".concat(" question800")).move((this.MARGIN + ((this.MARGIN * i) + (this.RECTWIDTH * i))).toString().concat('%'),(this.MARGIN + ((this.MARGIN*2) + (this.RECTHEIGHT*2))).toString().concat('%')).click(this.showQuestion);
-          let text400 = this.draw.text('$800').fill(this.MONEYTEXTCOLOUR).font(this.FONT).addClass("questions".concat(i.toString()).concat(" questiontext800")).move((this.MARGIN + ((this.MARGIN * i) + (this.RECTWIDTH * i)) + this.RECTWIDTH / 2).toString().concat('%'),(this.MARGIN*2 + ((this.MARGIN*2) + (this.RECTHEIGHT*2))).toString().concat('%')).id('800-text-'.concat(i.toString()));
-          let rect600 = this.draw.rect(this.RECTWIDTH.toString().concat('%'), this.RECTHEIGHT.toString().concat('%')).id('2-'.concat((i+6).toString())).fill(this.CATQUESTBLUE).addClass("question".concat(" question1200")).move((this.MARGIN + ((this.MARGIN * i) + (this.RECTWIDTH * i))).toString().concat('%'),(this.MARGIN + ((this.MARGIN*3) + (this.RECTHEIGHT*3))).toString().concat('%')).click(this.showQuestion);
-          let text600 = this.draw.text('$1200').fill(this.MONEYTEXTCOLOUR).font(this.FONT).addClass("questions".concat(i.toString()).concat(" questiontext1200")).move((this.MARGIN + ((this.MARGIN * i) + (this.RECTWIDTH * i)) + this.RECTWIDTH / 2).toString().concat('%'),(this.MARGIN*2 + ((this.MARGIN*3) + (this.RECTHEIGHT*3))).toString().concat('%')).id('1200-text-'.concat(i.toString()));
-          let rect800 = this.draw.rect(this.RECTWIDTH.toString().concat('%'), this.RECTHEIGHT.toString().concat('%')).id('3-'.concat((i+6).toString())).fill(this.CATQUESTBLUE).addClass("question".concat(" question1600")).move((this.MARGIN + ((this.MARGIN * i) + (this.RECTWIDTH * i))).toString().concat('%'),(this.MARGIN + ((this.MARGIN*4) + (this.RECTHEIGHT*4))).toString().concat('%')).click(this.showQuestion);
-          let text800 = this.draw.text('$1600').fill(this.MONEYTEXTCOLOUR).font(this.FONT).addClass("questions".concat(i.toString()).concat(" questiontext1600")).move((this.MARGIN + ((this.MARGIN * i) + (this.RECTWIDTH * i)) + this.RECTWIDTH / 2).toString().concat('%'),(this.MARGIN*2 + ((this.MARGIN*4) + (this.RECTHEIGHT*4))).toString().concat('%')).id('1600-text-'.concat(i.toString()));
-          let rect1000 = this.draw.rect(this.RECTWIDTH.toString().concat('%'), this.RECTHEIGHT.toString().concat('%')).id('4-'.concat((i+6).toString())).fill(this.CATQUESTBLUE).addClass("question".concat(" question2000")).move((this.MARGIN + ((this.MARGIN * i) + (this.RECTWIDTH * i))).toString().concat('%'),(this.MARGIN + ((this.MARGIN*5) + (this.RECTHEIGHT*5))).toString().concat('%')).click(this.showQuestion);
-          let text1000 = this.draw.text('$2000').fill(this.MONEYTEXTCOLOUR).font(this.FONT).addClass("questions".concat(i.toString()).concat(" questiontext2000")).move((this.MARGIN + ((this.MARGIN * i) + (this.RECTWIDTH * i)) + this.RECTWIDTH / 2).toString().concat('%'),(this.MARGIN*2 + ((this.MARGIN*5) + (this.RECTHEIGHT*5))).toString().concat('%')).id('2000-text-'.concat(i.toString()));
-        }
+        this.currentQuestion.c = true;
       }
     }
   }
