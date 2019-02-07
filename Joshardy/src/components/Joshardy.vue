@@ -1,8 +1,10 @@
 <template>
   <div id="Joshardy">
     <div class="left-team-container" :style="{backgroundColor: team1colour}">
-      <h2>{{this.team1name}}</h2>
-      <h3>${{this.team1score}}</h3> <br/><br/>
+      <div class="left-headings-container">
+        <h2>{{this.team1name}}</h2>
+        <h3>${{this.team1score}}</h3>
+      </div>
       <div id="left-image-container">
         <img src="/static/images/djob.jpg">
         <img src="/static/images/topher.jpg">
@@ -18,7 +20,7 @@
     </div>
 
     <div v-if="!questionSelected" class="question-container">
-      <div class="cat-container" v-for="(cat, index) in this.round1cats">
+      <div class="cat-container" v-for="(cat, index) in this.cats">
         <button disabled :class="'interior-button cat-label category-label-'.concat(index)">{{cat}}</button>
         <button class="interior-button question" v-for="question in questions[parseInt(index)]" @click="showQuestion(question)" :disabled="question.c">${{question.v}}</button>
       </div>
@@ -44,8 +46,10 @@
     </div>
 
     <div class="right-team-container" :style="{backgroundColor: team2colour}">
-      <h2>{{this.team2name}}</h2>
-      <h3>${{this.team2score}}</h3> <br/><br/>
+      <div class="right=headings-container">
+        <h2>{{this.team2name}}</h2>
+        <h3>${{this.team2score}}</h3>
+      </div>
       <div id="right-images-container">
         <img src="/static/images/firejosh.jpg">
         <img src="/static/images/skeebs.jpg">
@@ -70,18 +74,6 @@
 
     data () {
       return {
-        //Constants
-        CATQUESTBLUE : "#2434BD",
-        MONEYTEXTCOLOUR : "#E8B71A",
-        RECTWIDTH : 15,
-        RECTHEIGHT : 15,
-        MARGIN : 1.43,
-        TEXTSIZE : 50,
-        FONT : {family: 'Impact', size: 50, anchor: 'middle', leading: '1.5em'},
-        CATEGORYFONT : {family: 'Gadugi', size: 25, anchor: 'middle', leading: '1.5em'},
-        QUESTIONFONT : {family: 'Gadugi', size: 60, anchor: 'middle', leading: '1.5em'},
-        ROUND2FONT : {family: 'Gadugi', size: 10, anchor: 'middle', leading: '1.5em'},
-
         round1cats: [],
         round2cats: [],
         round1qs: [],
@@ -92,16 +84,16 @@
         team2name: "Team 2 Name",
         team2score: 0,
         team2colour: '#1c98ff',
-        draw: null,
         questionShow: null,
 
         questions: [],
         round: 1,
-        currentTarget: null,
+        cats: [],
 
         questionSelected: false,
         showAnswerBool: false,
-        currentQuestion: null
+        currentQuestion: null,
+        questionsAnswered: 0
 
       }
     },
@@ -113,17 +105,29 @@
       showAnswer: function () {
         this.showAnswerBool = true;
       },
+      checkRoundTwo: function () {
+        this.questionsAnswered += 1;
+        if (this.questionsAnswered >= 30) {
+          if (confirm('Go to Next Round?')) {
+            this.questions = this.round2qs;
+            this.cats = this.round2cats;
+            this.questionsAnswered = 0;
+          }
+        }
+      },
       team1correct: function () {
         this.team1score += this.currentQuestion.v;
         this.questionSelected = false;
         this.currentQuestion = null;
         this.showAnswerBool = false;
+        this.checkRoundTwo();
       },
       team1incorrect: function () {
         this.team1score -= this.currentQuestion.v;
         this.questionSelected = false;
         this.currentQuestion = null;
         this.showAnswerBool = false;
+        this.checkRoundTwo();
 
       },
       team2correct: function () {
@@ -131,18 +135,21 @@
         this.questionSelected = false;
         this.currentQuestion = null;
         this.showAnswerBool = false;
+        this.checkRoundTwo();
       },
       team2incorrect: function () {
         this.team2score -= this.currentQuestion.v;
         this.questionSelected = false;
         this.currentQuestion = null;
         this.showAnswerBool = false;
+        this.checkRoundTwo();
       },
 
       readQuestionData: function () {
         //Read questions here
         this.round1cats = questions.categories.slice(0,6);
         this.round2cats = questions.categories.slice(6,12);
+        this.cats = this.round1cats;
 
         this.round1qs.push(questions.Locations);
         this.round1qs.push(questions.JoshSongs);
@@ -161,7 +168,6 @@
         this.questions = this.round1qs;
 
       },
-
       showQuestion: function (val) {
         this.currentQuestion = val;
         this.questionSelected = true;
