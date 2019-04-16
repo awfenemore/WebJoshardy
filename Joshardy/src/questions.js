@@ -24,7 +24,7 @@ const questions = {
     {v: 1000, q: 'Trying to purchase WHAT and find a \ndecent WHAT was a bad decision in Vancouver', a: 'Timberlands boots and a haircut', f:'', c: false}],
   Names: [{v: 200, q: 'First Girlfriend\'s Name', a: 'Charlotte', f:'', c: false},
     {v: 400, q: 'Name of Josh\'s Daughter\'s School (2018)', a: 'Dr Phillips Elementary', f:'', c: false},
-    {v: 600, q: 'Josh\'s Daughter\'s \nBest Friends\'s Name', a: 'ASK', f:'', c: false},
+    {v: 600, q: 'Josh\'s Daughter\'s \nBest Friends\'s Name', a: 'Samantha', f:'', c: false},
     {v: 800, q: 'Name of that beautiful, reliable, nice smelling, \nclean, silver Holden Commodore', a: 'Wes', f:'', c: false},
     {v: 1000, q: 'Josh\'s Godfather', a: 'Stefan Fletcher', f:'stefan.JPG', c: false}],
   SportsoftheJosh: [{v: 200, q: 'The city of "that" \nCricket World Cup Semi Final', a: 'Wellington', f:'', c: false},
